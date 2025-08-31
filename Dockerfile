@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PYTHONUNBUFFERED=1 \
     PIP_PREFER_BINARY=1
 
-# --- System deps (добавил libsndfile1-dev и gfortran) ---
+# --- System deps ---
 RUN apt-get update && apt-get install -y --no-install-recommends \
     python3 python3-pip python3-venv python3-dev \
     git curl ca-certificates ffmpeg \
@@ -37,7 +37,7 @@ RUN python -m pip install --upgrade pip \
       torch==2.5.1+cu124 torchvision==0.20.1+cu124 torchaudio==2.5.1+cu124 \
  && rm -rf ~/.cache/pip
 
-# --- Heavy deps (ставим бинарные whl заранее, чтобы не компилировались) ---
+# --- Heavy deps (только бинарники) ---
 RUN python -m pip install --only-binary=:all: scipy soundfile psutil \
  && rm -rf ~/.cache/pip
 
