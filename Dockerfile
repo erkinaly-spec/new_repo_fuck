@@ -32,7 +32,7 @@ RUN python3 -m venv /workspace/.venv
 ENV PATH="/workspace/.venv/bin:${PATH}"
 
 # --- PyTorch CUDA 12.4 ---
-RUN python -m pip install --upgrade pip \
+RUN python -m pip install --upgrade pip setuptools wheel \
  && python -m pip install --extra-index-url https://download.pytorch.org/whl/cu124 \
       torch==2.5.1+cu124 torchvision==0.20.1+cu124 torchaudio==2.5.1+cu124 \
  && rm -rf ~/.cache/pip
@@ -41,9 +41,16 @@ RUN python -m pip install --upgrade pip \
 RUN python -m pip install --only-binary=:all: scipy soundfile psutil \
  && rm -rf ~/.cache/pip
 
-# --- ComfyUI requirements + Manager ---
+# --- ComfyUI requirements ---
 RUN python -m pip install -r /workspace/ComfyUI/requirements.txt \
- && python -m pip install git+https://github.com/ltdrdata/ComfyUI-Manager.git@v2.51.9 \
+ && rm -rf ~/.cache/pip
+
+# --- ComfyUI-Manager как custom node (без pip git+...) ---
+RUN git clone --depth=1 https://github.com/Comfy-Org/ComfyUI-Manager.git \
+      /workspace/ComfyUI/custom_nodes/ComfyUI-Manager \
+ && if [ -f /workspace/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt ]; then \
+      python -m pip install -r /workspace/ComfyUI/custom_nodes/ComfyUI-Manager/requirements.txt ; \
+    fi \
  && rm -rf ~/.cache/pip
 
 # --- Network / health ---
